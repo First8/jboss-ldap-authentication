@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="3.0"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+	<display-name>jboss-ldap-authentication</display-name>
+	<session-config id="PICK_ID">
+		<session-timeout>5</session-timeout>
+		<tracking-mode>COOKIE</tracking-mode>
+	</session-config>
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+	<jsp-config>
+		<jsp-property-group>
+			<url-pattern>*.jsp</url-pattern>
+		</jsp-property-group>
+	</jsp-config>
+	<security-constraint id="idAdmin">
+		<display-name>Admin</display-name>
+		<web-resource-collection>
+			<web-resource-name>HtmlAuth</web-resource-name>
+			<description>Only accessible to admins</description>
+			<url-pattern>/admin/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Admins</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint id="idUsers">
+		<display-name>Users</display-name>
+		<web-resource-collection>
+			<web-resource-name>wrUsers</web-resource-name>
+			<description>For the nice Users we have!</description>
+			<url-pattern>/users/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Users</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint id="idAuthenticated">
+		<display-name>Authenticated</display-name>
+		<web-resource-collection>
+			<web-resource-name>wrAuthenticated</web-resource-name>
+			<description>For all authenticated users</description>
+			<url-pattern>/all/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>Admins</role-name>
+			<role-name>Users</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint id="idFree">
+		<display-name>Free</display-name>
+		<web-resource-collection>
+			<web-resource-name>wrFree</web-resource-name>
+			<description>For all users</description>
+			<url-pattern>/free/*</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+	</security-constraint>
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>First8 LDAP realm</realm-name>
+	</login-config>
+	<security-role>
+		<description>The Administrators of the system</description>
+		<role-name>Admins</role-name>
+	</security-role>
+	<security-role>
+		<description>Grouping other users</description>
+		<role-name>Users</role-name>
+	</security-role>
+</web-app>
