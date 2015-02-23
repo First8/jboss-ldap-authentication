@@ -79,8 +79,10 @@ In the `web.xml` we specify which security-role's there are. And then we specify
 
 ## Application
 The example application is very crude: visit any of these pages to show the UserPrincipal:
-* /jboss-ldap-authentication/admin/index.jsp - accessable only to Admins-group users
+* /jboss-ldap-authentication/admins/index.jsp - accessable only to Admins-group users
 * /jboss-ldap-authentication/users/index.jsp - accessable only to Users-group users
 * /jboss-ldap-authentication/all/index.jsp - accessable Users-group users & Admins-group users
 * /jboss-ldap-authentication/free/index.jsp - accessable to even users that are not logged in
-You will need to restart you browser to login as a different user. This is a property of the BASIC-HTTP-authentication mechanism.
+
+## FORM authentication
+The form-based authentication uses cookies to keep track of the logged-in user/session. It uses LDAP as described above but as opposed to HTTP-BASIC-Authentication we can now manage the logout. FORM-login in enabled by setting the value of <auth-method>-tag to FORM and specifying a login-form-page(/form-login/login.jsp) and an error-page(/form-login/error.jsp). JBoss will redirect to the specified `form-login-page` when no user in logged.

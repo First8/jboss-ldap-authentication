@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="WebApp_ID" version="3.0"
+<web-app id="jboss-ldap-authentication" version="3.0"
 	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
 	<display-name>jboss-ldap-authentication</display-name>
@@ -16,11 +16,11 @@
 		</jsp-property-group>
 	</jsp-config>
 	<security-constraint id="idAdmin">
-		<display-name>Admin</display-name>
+		<display-name>Admins</display-name>
 		<web-resource-collection>
 			<web-resource-name>HtmlAuth</web-resource-name>
 			<description>Only accessible to admins</description>
-			<url-pattern>/admin/*</url-pattern>
+			<url-pattern>/admins/*</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -66,8 +66,12 @@
 		</web-resource-collection>
 	</security-constraint>
 	<login-config>
-		<auth-method>BASIC</auth-method>
+		<auth-method>FORM</auth-method>
 		<realm-name>First8 LDAP realm</realm-name>
+		<form-login-config>
+			<form-login-page>/form-login/login.jsp</form-login-page>
+			<form-error-page>/form-login/error.jsp</form-error-page>
+		</form-login-config>
 	</login-config>
 	<security-role>
 		<description>The Administrators of the system</description>
