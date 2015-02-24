@@ -1,0 +1,11 @@
+{
+  "realm": "first8",
+  "realm-public-key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCLacwpz6OMP75IOKuDOuHISGBQc+PQBfA+nXtPxM3bIVMOg1ursVyZV5BYaeS0sDe+0P2aGwgi2SC7u38Z/SEUhRVRHAPEc8g/ZzHmQl2c+k9IdVSAOFm/ZcXk41rhTznNMqFYh39FoKwTvXuCWiyI/IO8KUBmz3WviCKs84oi+wIDAQAB",
+  "auth-server-url": "http://10.200.1.55:8080/auth",
+  "ssl-required": "external",
+  "resource": "jboss-ldap-authentication",
+  "credentials": {
+    "secret": "2672893d-306b-4267-a027-f6a699227079"
+  },
+  "principal-attribute": "email"
+}

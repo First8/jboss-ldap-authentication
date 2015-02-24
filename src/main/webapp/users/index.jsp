@@ -4,6 +4,7 @@
 <title>Main Application</title>
 </head>
 <body>
+	<util:logout />
 	<util:user-info name="Users"/>
 </body>
 </html>

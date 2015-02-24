@@ -4,6 +4,7 @@
 <title>Main Application</title>
 </head>
 <body>
-	<util:user-info name="Free for all"/>
+	<util:logout />
+	<util:user-info name="Admins"/>
 </body>
 </html>

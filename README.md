@@ -43,34 +43,22 @@ To see if any authentication happens, it is handy to turn on authentication-logg
 ```
 This will create a file called `audit.log` within the logs-dir.
 
-### LDAP connection
-The LDAP connection is configured in the `<subsystem xmlns="urn:jboss:domain:security:1.1">` section of the standalone.xml inside the `<security-domains>`-tag.
+### Keycloak connection
+To setup Keycloak to connect to your LDAP-server, you have to configure 'Federation'. This is done in the Users-page of your realm. First specify a name. Then fill-in if your want to sync the user-actions (like 'update password' & 'register user') to your LDAP. Then you have to specify the Connection URL. This is normally in the form of 'ldap://<ip-addres>:<port>'. Next you have to specify a Base DN. For the first8-domain this is 'dc=first8,dc=nl'. Furthermore you have to give the 'User DN Suffix' to indicate where the users are. In the case of first8 this is 'ou=People,dc=first8,dc=nl'. Finaly you have to specify `Bind DN` & `Bind Credential` which in case of a default Apache Directory Server is 'uid=admin,ou=system'/'secret'. Some of there steps can be checked using the 'Test *'-buttons next the the input boxes.
 
-We configure a connection to the ApacheDS server running on localhost. We use the default security-credentials used of ApacheDS: user `uid=admin,ou=system` and its password `secret`.
+Now your application has to be registered in Keycloak. Keycloak needs to know which applications are authorized to connect and where to redirect again. The things to fill-in are: a name (eg. `jboss-ldap-authentication`), a `Redirect URI` (in our case `http://<your-host>:<port>/jboss-ldap-authentication/*`, mind the '*' at the end) and an `Admin URL` (for the JBoss-adapter this is the top-level of the war: `http://<your-host>:<port>/jboss-ldap-authentication`)
 
-To find the users, a search will be done under the tree starting at `ou=People,dc=first8,dc=nl` and then the attribute `uid` is used. But to map a user to a group/role, a search is done under the `ou=Roles,dc=first8,dc=nl`-tree and the `member`-attribute is used find the DN of the user. Then the `cn`-attribute is taken from that object to function as the `security-role`-name. Which in turn is mapped to the `security-role` as mentioned in the next section.
+### JBoss part
+To use Keyclock in JBoss an adaptor module needs to be installed. Download the adapter and extract it in the JBoss base-dir. Then register the adapter in the standalone.xml as described in chapter '8.2. JBoss/Wildfly Adapter' of the Keycloak-manual. NB: when using Keycloak in JBoss 7.1.1, the extension-name is slightly different.
+To connect to Keycloak, two things need to be done per war. One: one has to set the `login-config/auth-method` to `KEYCLOAK` in `web.xml`. Two: one has to add `keycloak.json` to the `WEB-INF` directory. The content of the `keycloak.json`-file can be obtained from the application-page within you realm-configuration-page in Keycloak under the tab-page 'Installation'.
 
-Here's the complete snipit:
-```xml
-<security-domain name="First8-LDAP">
-    <authentication>
-	<login-module code="LdapExtended" flag="required">
-	    <module-option name="java.naming.factory.initial" value="com.sun.jndi.ldap.LdapCtxFactory"/>
-	    <module-option name="java.naming.provider.url" value="ldap://localhost:10389"/>
-	    <module-option name="java.naming.security.authentication" value="simple"/>
-	    <module-option name="bindDN" value="uid=admin,ou=system"/>
-	    <module-option name="bindCredential" value="secret"/>
-	    <module-option name="baseCtxDN" value="ou=People,dc=first8,dc=nl"/>
-	    <module-option name="baseFilter" value="(uid={0})"/>
-	    <module-option name="rolesCtxDN" value="ou=Roles,dc=first8,dc=nl"/>
-	    <module-option name="roleFilter" value="(member={1})"/>
-	    <module-option name="roleAttributeID" value="cn"/>
-	    <module-option name="searchScope" value="ONELEVEL_SCOPE"/>
-	    <module-option name="allowEmptyPasswords" value="false"/>
-	</login-module>
-    </authentication>
-</security-domain>
-```
+The default `keycloak.json`-file from the 'Installation'-page yields a UUID from the LDAP-server's item as the `request.RemoteUser`. This should be unique but surely does not look nice. One can specify a different attribute to take as the 'principal' by specifying a `principal-attribute` in the `keycloak.json`-file. Possible values are 'sub', 'preferred_username', 'email', 'name', 'nickname', 'given_name', 'family_name' as can be found in the manual chapter 8.1.
+
+### Roles
+Within Keycloak, one has to configure the roles that are defined in the `web.xml` and assign these roles to all appropriate users. Default roles can be setup that will apply to all your LDAP-users so you only have to manually handle the special cases.
+
+## Logout
+The logout with Keycloak is a two-step thing. The session within JBoss has to expire or be invalidated. And the session with Keycloak has to expire or be invalidated. If the JBoss-session has expired before the Keycloak one, the user will be auto-logged-in again by Keycloak. To sync this the LogoutServlet will invoke the 'logout()' of the current request and call the Keycloak-server to invalidate the session there.
 
 ## Mapping in jboss-web.xml & web.xml
 Within the application in the `jboss-web.xml`-file the `security-domain`-tag links the security-domain of the application to the security-domain in your standalone.xml.
@@ -79,8 +67,7 @@ In the `web.xml` we specify which security-role's there are. And then we specify
 
 ## Application
 The example application is very crude: visit any of these pages to show the UserPrincipal:
-* /jboss-ldap-authentication/admin/index.jsp - accessable only to Admins-group users
+* /jboss-ldap-authentication/admins/index.jsp - accessable only to Admins-group users
 * /jboss-ldap-authentication/users/index.jsp - accessable only to Users-group users
 * /jboss-ldap-authentication/all/index.jsp - accessable Users-group users & Admins-group users
 * /jboss-ldap-authentication/free/index.jsp - accessable to even users that are not logged in
-You will need to restart you browser to login as a different user. This is a property of the BASIC-HTTP-authentication mechanism.
