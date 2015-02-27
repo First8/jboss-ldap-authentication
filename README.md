@@ -1,5 +1,5 @@
 # jboss-ldap-authentication
-Test authentication within JBoss using LDAP as the source of your users and grouping using Java-EE only.
+Tutorial on how to do authentication within JBoss using LDAP as the source of your users and grouping using Java-EE only.
 
 This code is based on the following starting-points:
 * [Configure JBoss with LDAP](http://www.mastertheboss.com/jboss-server/jboss-security/configure-jboss-with-ldap) of [ACME Labs](http://acme.com/software/)
